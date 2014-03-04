@@ -81,9 +81,9 @@ stage: all stage-generate
 elixir: $(ELIXIR)
 
 $(ELIXIR):
-	git clone $(ELIXIR_URL) .elixir
-	cd $(ELIXIR_BUILD_DIR) && git checkout $(ELIXIR_BRANCH)
-	$(MAKE) -C $(ELIXIR_BUILD_DIR)
+	git clone $(ELIXIR_URL) $(ELIXIR_BUILD_DIR)
+	cd $(ELIXIR_ABS_BUILD_DIR) && git checkout $(ELIXIR_BRANCH)
+	$(MAKE) -C $(ELIXIR_ABS_BUILD_DIR)
 
 ##
 ## relx
