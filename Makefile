@@ -57,6 +57,7 @@ generate: $(RELX)
 rel: all generate
 
 clean: $(ELIXIR)
+	rm -rf rel/$(PROJECT)
 	$(mix) clean
 
 distclean: clean
