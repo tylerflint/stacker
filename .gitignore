@@ -1,0 +1,9 @@
+/_build
+/_elixir
+/deps
+erl_crash.dump
+*.ez
+/tmp
+/relx
+.relx-build
+rel/stacker
