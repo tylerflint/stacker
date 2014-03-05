@@ -8,7 +8,7 @@ MIX_ENV ?= prod
 
 ELIXIR_BUILD_DIR := _elixir
 ELIXIR_ABS_BUILD_DIR := $(shell pwd)/$(ELIXIR_BUILD_DIR)
-ELIXIR := $(ELIXIR_BUILD_DIR)/bin/elixir
+ELIXIR := $(ELIXIR_BUILD_DIR)/VERSION
 MIX := $(ELIXIR_BUILD_DIR)/bin/mix
 
 mix = MIX_ENV=$(MIX_ENV) $(MIX)
@@ -73,14 +73,16 @@ compile: $(ELIXIR)
 build: $(ELIXIR) deps
 	$(mix) compile
 
-generate: $(RELX)
-	$(relx) --config rel/relx.config --relname $(PROJECT) --relvsn "$(shell git describe --always --tags | sed -e s/^v//)" --output-dir rel/$(PROJECT)
-
-rel: all generate
-
-clean:
-	rm -rf rel/$(PROJECT)
+clean-build:
 	rm -rf $(shell pwd)/_build
+
+rel: $(RELX) all
+	$(relx) --config rel/relx.config --relname $(PROJECT) --relvsn "$(shell git describe --always --tags | sed -e s/^v//)" --output-dir rel/$(PROJECT)	
+
+clean-rel:
+	rm -rf rel/$(PROJECT)
+
+clean: clean-rel clean-build
 
 clean-all: clean clean-deps clean-elixir clean-rebar clean-relx
 
@@ -100,9 +102,9 @@ stage: all stage-generate
 ##
 .PHONY: elixir
 
-elixir: $(REBAR) $(ELIXIR)
+elixir: $(ELIXIR)
 
-$(ELIXIR):
+$(ELIXIR): $(REBAR)
 	git clone $(ELIXIR_URL) $(ELIXIR_BUILD_DIR)
 	cd $(ELIXIR_ABS_BUILD_DIR) && git checkout $(ELIXIR_BRANCH)
 	$(MAKE) -C $(ELIXIR_ABS_BUILD_DIR)
@@ -122,10 +124,11 @@ $(REBAR):
 	cd $(REBAR_ABS_BUILD_DIR) && git checkout $(REBAR_TAG)
 	$(MAKE) -C $(REBAR_ABS_BUILD_DIR)
 	mv $(REBAR_ABS_BUILD_DIR)/rebar $(shell pwd)/rebar
-	rm -rf REBAR_ABS_BUILD_DIR
+	rm -rf $(REBAR_ABS_BUILD_DIR)
 
 clean-rebar:
-	rm -f rebar
+	rm -f $(REBAR)
+	rm -rf $(REBAR_ABS_BUILD_DIR)
 
 ##
 ## relx
