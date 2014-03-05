@@ -312,7 +312,6 @@ case "$1" in
         # Make sure a node is running
         node_up_check
 
-        echo "Remote Shell: Use \"Ctrl-C a\" to quit. q() or init:stop() will terminate the $SCRIPT node."
         shift
         NODE_NAME=${NAME_ARG#* }
 
