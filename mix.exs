@@ -10,7 +10,16 @@ defmodule Stacker.Mixfile do
 
   # Configuration for the OTP application
   def application do
-    [mod: { Stacker, [] }]
+    [
+      mod: { Stacker, [] },
+      applications: [
+        :kernel,
+        :stdlib,
+        :sasl,
+        :elixir,
+        :lager
+      ]
+    ]
   end
 
   # Returns the list of dependencies in the format:
@@ -20,6 +29,7 @@ defmodule Stacker.Mixfile do
   # { :barbat, "~> 0.1", github: "elixir-lang/barbat" }
   defp deps do
     [
+      { :lager, "~> 2.0.1", github: "basho/lager", tag: "2.0.1" },
       { :cuttlefish, github: "basho/cuttlefish", ref: "782eb539c3c4b71ed4d1299d764caa20b0447b62" },
       { :relx_cuttlefish, github: "potatosalad/relx_cuttlefish", tag: "0.0.1" }
     ]
