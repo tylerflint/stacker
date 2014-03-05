@@ -1,5 +1,7 @@
 PROJECT = stacker
 
+OUTPUT_DIR ?= rel/$(PROJECT)
+
 ## elixir
 
 ELIXIR_URL ?= https://github.com/elixir-lang/elixir.git
@@ -11,7 +13,7 @@ ELIXIR_ABS_BUILD_DIR := $(shell pwd)/$(ELIXIR_BUILD_DIR)
 ELIXIR := $(ELIXIR_BUILD_DIR)/VERSION
 MIX := $(ELIXIR_BUILD_DIR)/bin/mix
 
-mix = MIX_ENV=$(MIX_ENV) $(MIX)
+mix = PATH=$(shell pwd):$(ELIXIR_ABS_BUILD_DIR)/bin:$(PATH) MIX_ENV=$(MIX_ENV) $(MIX)
 
 ## rebar
 
@@ -21,16 +23,6 @@ REBAR_TAG ?= 2.2.0
 REBAR := $(shell pwd)/rebar
 REBAR_BUILD_DIR := .rebar-build
 REBAR_ABS_BUILD_DIR := $(shell pwd)/$(REBAR_BUILD_DIR)
-
-rebar_args_3 = -v 3
-rebar_args_2 = -v 2
-rebar_args_1 = -v 1
-rebar_args = $(rebar_args_$(V))
-
-rebar_verbose_0 = @echo ":: REBAR" $(@F);
-rebar_verbose = $(rebar_verbose_$(V))
-
-rebar = $(rebar_verbose) V=$(V) TEST=$(TEST) $(REBAR) $(rebar_args)
 
 ## relx
 
@@ -49,35 +41,35 @@ relx_verbose = $(relx_verbose_$(V))
 
 relx = $(relx_verbose) V=$(V) TEST=$(TEST) $(RELX) $(relx_args)
 
-.PHONY: deps update-deps deps-compile compile build generate rel clean distclean
+.PHONY: deps update-deps deps-compile compile build generate rel clean clean-all
 
 all: build
 
 deps: get-deps deps-compile
 
 get-deps: $(ELIXIR)
-	$(mix) deps.get
+	@$(mix) deps.get
 
 update-deps: $(ELIXIR)
-	$(mix) deps.update --all
+	@$(mix) deps.update --all
 
 deps-compile: $(ELIXIR)
-	$(mix) deps.compile
+	@$(mix) deps.compile
 
 clean-deps:
 	rm -rf deps
 
 compile: $(ELIXIR)
-	$(mix) compile
+	@$(mix) compile
 
 build: $(ELIXIR) deps
-	$(mix) compile
+	@$(mix) compile
 
 clean-build:
 	rm -rf $(shell pwd)/_build
 
 rel: $(RELX) all
-	$(relx) --config rel/relx.config --relname $(PROJECT) --relvsn "$(shell git describe --always --tags | sed -e s/^v//)" --output-dir rel/$(PROJECT)	
+	@$(relx) --config rel/relx.config --relname $(PROJECT) --relvsn "$(shell git describe --always --tags | sed -e s/^v//)" --output-dir $(OUTPUT_DIR)	
 
 clean-rel:
 	rm -rf rel/$(PROJECT)
