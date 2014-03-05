@@ -2,7 +2,7 @@ defmodule Stacker.Supervisor do
   use Supervisor.Behaviour
 
   def start_link do
-    :supervisor.start_link(__MODULE__, [])
+    :supervisor.start_link({:local, :stacker_sup}, __MODULE__, [])
   end
 
   def init([]) do
