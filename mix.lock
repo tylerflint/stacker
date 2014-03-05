@@ -1,1 +1,7 @@
-[  ]
+[ "cuttlefish": {:git, "git://github.com/basho/cuttlefish.git", "782eb539c3c4b71ed4d1299d764caa20b0447b62", [ref: "782eb539c3c4b71ed4d1299d764caa20b0447b62"]},
+  "getopt": {:git, "git://github.com/jcomellas/getopt.git", "659a28f4145bc9843598972854299dc4ea77e4cb", [tag: "v0.4.3"]},
+  "goldrush": {:git, "git://github.com/DeadZen/goldrush.git", "1d883423ac360b3536ca52dc733a0164bacf3109", [tag: "0.1.5"]},
+  "kvc": {:git, "git://github.com/etrepum/kvc.git", "75c4e76468cb2bd03067a9c349989ee914a1b581", [tag: "v1.3.0"]},
+  "lager": {:git, "git://github.com/basho/lager.git", "ad400896af5b1ad8b4f7a4d34e609b5a990640bb", [tag: "2.0.1"]},
+  "neotoma": {:git, "git://github.com/seancribbs/neotoma.git", "2ef28a45d800e8ef5ce46890d92daa06f48c6c27", [tag: "1.6.2"]},
+  "relx_cuttlefish": {:git, "git://github.com/potatosalad/relx_cuttlefish.git", "ba0e224a8e329d32d58ff1e8a1c9916cdcaa9a6e", [tag: "0.0.1"]} ]
