@@ -174,12 +174,6 @@ case "$1" in
         # Bootstrap daemon command (check perms & drop to $RUNNER_USER)
         bootstrapd $@
 
-        if [ "${SMF_METHOD}" != "start" ]; then
-            echo "***"
-            echo "Warning: please use 'svcadm enable $SCRIPT' instead"
-            echo "***"
-        fi
-
         # Make sure there is not already a node running
         node_down_check
 
@@ -234,12 +228,6 @@ case "$1" in
     stop)
         # Bootstrap daemon command (check perms & drop to $RUNNER_USER)
         bootstrapd $@
-
-        if [ "${SMF_METHOD}" != "stop" ]; then
-            echo "***"
-            echo "Warning: please use 'svcadm disable $SCRIPT' instead"
-            echo "***"
-        fi
 
         get_pid
         ES=$?
@@ -327,7 +315,21 @@ case "$1" in
         echo "Remote Shell: Use \"Ctrl-C a\" to quit. q() or init:stop() will terminate the $SCRIPT node."
         shift
         NODE_NAME=${NAME_ARG#* }
-        exec $ERTS_PATH/erl -name c_$$_$NODE_NAME -hidden -remsh $NODE_NAME $COOKIE_ARG
+
+        # uncomment for default erlang eshell
+        # exec $ERTS_PATH/erl -name c_$$_$NODE_NAME -hidden -remsh $NODE_NAME $COOKIE_ARG
+
+        # uncomment for elixir iex shell
+        exec $ERTS_PATH/erl \
+            -name c_$$_$NODE_NAME \
+            -hidden \
+            $COOKIE_ARG \
+            -user Elixir.IEx.CLI \
+            -extra \
+                --no-halt \
+                +iex \
+                --remsh $NODE_NAME
+
         ;;
 
     console)
@@ -358,9 +360,22 @@ case "$1" in
         BINDIR=$RUNNER_BASE_DIR/erts-$ERTS_VSN/bin
         EMU=beam
         PROGNAME=`echo $0 | sed 's/.*\///'`
+
+        # uncomment for default erlang eshell
+        # CMD="$NUMACTL $BINDIR/erlexec -boot $RUNNER_BASE_DIR/releases/$APP_VSN/$RUNNER_SCRIPT \
+        #      $CONFIG_ARGS \
+        #     -pa $RUNNER_PATCH_DIR \
+        #     -user Elixir.IEx.CLI \
+        #     -- --no-halt +iex ${1+"$@"}"
+
+        # uncomment for elixir iex shell
         CMD="$NUMACTL $BINDIR/erlexec -boot $RUNNER_BASE_DIR/releases/$APP_VSN/$RUNNER_SCRIPT \
              $CONFIG_ARGS \
-            -pa $RUNNER_PATCH_DIR -- ${1+"$@"}"
+            -pa $RUNNER_PATCH_DIR \
+            -noshell \
+            -user Elixir.IEx.CLI \
+            -extra --no-halt +iex"
+
         export EMU
         export ROOTDIR
         export BINDIR
