@@ -1,9 +1,11 @@
-/_build
 /_elixir
-/deps
-erl_crash.dump
-*.ez
-/tmp
+/rebar
+.rebar-build
 /relx
 .relx-build
+/_build
+/deps
+/tmp
+erl_crash.dump
+*.ez
 rel/stacker
