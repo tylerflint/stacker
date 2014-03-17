@@ -24,23 +24,6 @@ REBAR := $(shell pwd)/rebar
 REBAR_BUILD_DIR := .rebar-build
 REBAR_ABS_BUILD_DIR := $(shell pwd)/$(REBAR_BUILD_DIR)
 
-## relx
-
-RELX_URL ?= https://github.com/erlware/relx/releases/download/v0.5.2/relx
-
-RELX := $(shell pwd)/relx
-RELX_BUILD_DIR := $(shell pwd)/.relx-build
-
-relx_args_3 = -V 3
-relx_args_2 = -V 2
-relx_args_1 = -V 1
-relx_args = $(relx_args_$(V))
-
-relx_verbose_0 = @echo ":: RELX" $(@F);
-relx_verbose = $(relx_verbose_$(V))
-
-relx = $(relx_verbose) V=$(V) TEST=$(TEST) $(RELX) $(relx_args)
-
 .PHONY: deps update-deps deps-compile compile build generate rel clean clean-all
 
 all: build
@@ -53,7 +36,7 @@ get-deps: $(ELIXIR)
 update-deps: $(ELIXIR)
 	@$(mix) deps.update --all
 
-deps-compile: $(ELIXIR)
+deps-compile: $(ELIXIR) $(REBAR)
 	@$(mix) deps.compile
 
 clean-deps:
@@ -69,14 +52,14 @@ clean-build:
 	rm -rf $(shell pwd)/_build
 
 rel: $(RELX) all
-	@$(relx) --config rel/relx.config --relname $(PROJECT) --relvsn "$(shell git describe --always --tags | sed -e s/^v//)" --output-dir $(OUTPUT_DIR)	
+	@$(mix) relex.assemble
 
 clean-rel:
-	rm -rf rel/$(PROJECT)
+	rm -rf $(shell pwd)/$(PROJECT)
 
 clean: clean-rel clean-build
 
-clean-all: clean clean-deps clean-elixir clean-rebar clean-relx
+clean-all: clean clean-deps clean-elixir clean-rebar
 
 ##
 ## Developer targets
@@ -96,7 +79,7 @@ stage: all stage-generate
 
 elixir: $(ELIXIR)
 
-$(ELIXIR): $(REBAR)
+$(ELIXIR):
 	git clone $(ELIXIR_URL) $(ELIXIR_BUILD_DIR)
 	cd $(ELIXIR_ABS_BUILD_DIR) && git checkout $(ELIXIR_BRANCH)
 	$(MAKE) -C $(ELIXIR_ABS_BUILD_DIR)
@@ -121,17 +104,3 @@ $(REBAR):
 clean-rebar:
 	rm -f $(REBAR)
 	rm -rf $(REBAR_ABS_BUILD_DIR)
-
-##
-## relx
-##
-.PHONY: relx
-
-relx: $(RELX)
-
-$(RELX):
-	wget -O $(RELX) $(RELX_URL) || rm $(RELX)
-	chmod +x $(RELX)
-
-clean-relx:
-	rm -f relx

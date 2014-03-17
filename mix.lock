@@ -1,1 +1,2 @@
-[  ]
+[ "pogo": {:git, "git://github.com/onkel-dirtus/pogo.git", "8ea9316042b2bf1e6240b0b16e0b24c69d836c95", []},
+  "relex": {:git, "git://github.com/yrashk/relex.git", "2fc4619c05e5e3addeb199f4053f4c86b46c9e95", []} ]

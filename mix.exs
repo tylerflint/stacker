@@ -1,3 +1,17 @@
+Code.append_path "_build/#{Mix.env}/lib/relex/ebin"
+Code.append_path "_build/#{Mix.env}/lib/pogo/ebin"
+
+# this keeps the mixfile from breaking until we've installed our dependencies...
+if Code.ensure_loaded?(Relex.Release) do
+  defmodule Stacker.Release do
+    use Relex.Release
+    use Pogo.Release
+
+    def name, do: "stacker"
+    def applications, do: [:pogo, :stacker]
+  end
+end
+
 defmodule Stacker.Mixfile do
   use Mix.Project
 
@@ -5,7 +19,12 @@ defmodule Stacker.Mixfile do
     [ app: :stacker,
       version: "0.0.1",
       elixir: "~> 0.12.4",
-      deps: deps ]
+      deps: deps,
+      release: Stacker.Release,
+      release_options: [
+        path: "rel"
+      ]
+    ]
   end
 
   # Configuration for the OTP application
@@ -19,6 +38,9 @@ defmodule Stacker.Mixfile do
   # To specify particular versions, regardless of the tag, do:
   # { :barbat, "~> 0.1", github: "elixir-lang/barbat" }
   defp deps do
-    []
+    [
+      {:relex, github: "yrashk/relex"},
+      {:pogo, github: "onkel-dirtus/pogo"}
+    ]
   end
 end
